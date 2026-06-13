@@ -13,11 +13,44 @@ class Peli {
 }
 
 class PelisCollection {
-  getAll(): Promise<Peli[]> {
-    return jsonfile.readFile("...laRutaDelArchivo").then(() => {
-      // la respuesta de la promesa
-      return [];
+  async getAll(): Promise<Peli[]> {
+    const peliculas = await jsonfile.readFile(__dirname + "/pelis.json");
+    return peliculas;
+  }
+
+  async getById(id: number): Promise<Peli | undefined> {
+    const peliculas = await this.getAll();
+    return peliculas.find((p) => p.id === id);
+  }
+
+  async search(options: { title?: string; tag?: string }): Promise<Peli[]> {
+    const peliculas = await this.getAll();
+    return peliculas.filter((peli) => {
+      let titleMatch = true;
+      let tagMatch = true;
+
+      if (options.title) {
+        titleMatch = peli.title.toLowerCase().includes(options.title.toLowerCase());
+      }
+
+      if (options.tag) {
+        tagMatch = peli.tags.some((t) => t.toLowerCase() === options.tag!.toLowerCase());
+      }
+
+      return titleMatch && tagMatch;
     });
+  }
+
+  async add(peli: Peli): Promise<boolean> {
+    const peliExistente = await this.getById(peli.id);
+    if (peliExistente) {
+      return false;
+    } else {
+      const peliculas = await this.getAll();
+      peliculas.push(peli);
+      await jsonfile.writeFile(__dirname + "/pelis.json", peliculas);
+      return true;
+    }
   }
 }
 export { PelisCollection, Peli };
