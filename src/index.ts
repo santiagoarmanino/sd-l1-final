@@ -22,12 +22,12 @@ async function main() {
     }
 
     result = await controller.add({
-      id: params.id,
+      id: Number(params.id),
       title: params.title,
       tags: tags,
     });
   } else if (params._[0] === "get") {
-    const id = params._[1];
+    const id = Number(params._[1]);
     result = await controller.get({ id: id });
   } else if (params._[0] === "search") {
     result = await controller.get({

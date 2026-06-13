@@ -1,4 +1,5 @@
 import * as jsonfile from "jsonfile";
+import * as path from "path";
 // El siguiente import no se usa pero es necesario
 import "./pelis.json";
 // de esta forma Typescript se entera que tiene que incluir
@@ -14,7 +15,8 @@ class Peli {
 
 class PelisCollection {
   async getAll(): Promise<Peli[]> {
-    const peliculas = await jsonfile.readFile(__dirname + "/pelis.json");
+    const filePath = path.join(__dirname, "pelis.json");
+    const peliculas = await jsonfile.readFile(filePath);
     return peliculas;
   }
 
@@ -48,7 +50,8 @@ class PelisCollection {
     } else {
       const peliculas = await this.getAll();
       peliculas.push(peli);
-      await jsonfile.writeFile(__dirname + "/pelis.json", peliculas);
+      const filePath = path.join(__dirname, "pelis.json");
+      await jsonfile.writeFile(filePath, peliculas);
       return true;
     }
   }
